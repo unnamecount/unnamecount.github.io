@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Estudio Creativo</title>
+<meta name="description" content="Tus programas de dibujo y animación en un solo sitio.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#ffb3d1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Estudio">
+<link rel="stylesheet" href="hub.css">
+<script>window.ESTUDIO_VERSION = /*VER*/"1.0"/*VER*/;</script>
+</head>
+<body>
+<div class="bg" id="bg" aria-hidden="true"></div>
+<div class="veil" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="brand">
+    <img id="logo" class="logo" src="icon-192.png" alt="" width="52" height="52">
+    <div>
+      <b>Estudio Creativo</b>
+      <small>Tus programas, en un solo sitio</small>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="pill" id="bCheck" type="button" title="Buscar versiones nuevas de todos los programas">↻ <span>Buscar novedades</span></button>
+    <button class="pill" id="bStyle" type="button" aria-expanded="false" aria-controls="panel">🎨 <span>Estilo</span></button>
+    <button class="pill" id="bInstall" type="button" hidden>⬇ <span>Instalar</span></button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>¿Qué vas a crear hoy?</h1>
+    <p>Elige un programa para empezar.</p>
+  </section>
+  <section class="cards" id="cards" aria-label="Programas"></section>
+  <p class="foot" id="foot"></p>
+</main>
+
+<aside id="panel" class="panel edge" hidden aria-label="Estilo del Estudio">
+  <div class="phead">
+    <b>Estilo del Estudio</b>
+    <button class="x" id="pClose" type="button" aria-label="Cerrar">✕</button>
+  </div>
+
+  <div class="sec">
+    <label class="lab">Tono de rosa</label>
+    <div class="row" id="pTonos"></div>
+  </div>
+
+  <div class="sec">
+    <label class="lab">Bordes</label>
+    <div class="row wrap" id="pModos"></div>
+    <small class="hint" id="pModoHint"></small>
+  </div>
+
+  <div class="sec" id="pColoresSec">
+    <label class="lab">Tus colores <span class="muted">(toca uno y elige su color)</span></label>
+    <div class="row wrap" id="pChips"></div>
+    <div class="swatches" id="pSwatches"></div>
+    <label class="custom">Otro color: <input type="color" id="pCustom" value="#ff4fa0"></label>
+  </div>
+
+  <div class="sec grid2">
+    <label>Velocidad <input type="range" id="pVel" min="1" max="10" step="1"></label>
+    <label>Grosor <input type="range" id="pGrosor" min="2" max="9" step="1"></label>
+  </div>
+  <div class="sec checks">
+    <label><input type="checkbox" id="pBrillo"> Brillo alrededor</label>
+    <label><input type="checkbox" id="pMov"> Con movimiento</label>
+  </div>
+
+  <div class="sec">
+    <label class="lab">Combinaciones</label>
+    <div class="row wrap" id="pPresets"></div>
+  </div>
+
+  <div class="sec end">
+    <button class="pill small" id="pReset" type="button">Volver al principio</button>
+  </div>
+</aside>
+
+<div class="banner" id="banner" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="hub.js"></script>
+</body>
+</html>

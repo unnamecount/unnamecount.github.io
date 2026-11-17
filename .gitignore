@@ -1,0 +1,11 @@
+# Las fotos originales pesan mucho: se publican las versiones ligeras (fondo-web.jpg, logo-web.png)
+imagenes/fondo.*
+imagenes/logo.*
+__pycache__/
+*.pyc
+.claude/
+_prueba*
+# Cosas de desarrollo de GachaMotion que no hace falta publicar
+gachamotion/tests/
+gachamotion/README_v0.2_original.txt
+PROMPT_IMAGENES.txt

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "pincelada",
+    "nombre": "Pincelada",
+    "lema": "Dibuja y pinta en 2D y 3D",
+    "detalle": "Pinceles, acuarela que mezcla colores, capas, fotos, animación y modo 3D.",
+    "url": "pincelada/",
+    "icono": "pincelada/icon-192.png",
+    "version": "pincelada/version.json",
+    "cache": "pincelada-app-"
+  },
+  {
+    "id": "gachamotion",
+    "nombre": "GachaMotion Studio",
+    "lema": "Dibuja por capas y anima personajes",
+    "detalle": "Importa tu personaje por piezas y dale vida: movimiento, parpadeo, deformación y vídeo.",
+    "url": "gachamotion/",
+    "icono": "gachamotion/icono-192.png",
+    "version": "gachamotion/version.json",
+    "cache": "gachamotion-app-"
+  }
+]
