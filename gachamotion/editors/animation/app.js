@@ -181,6 +181,7 @@ function syncProperties(){
 function isDescendant(layerId,ancestorId){let node=findLayer(layerId),visited=new Set();while(node?.parent&&!visited.has(node.id)){if(node.parent===ancestorId)return true;visited.add(node.id);node=findLayer(node.parent);}return false;}
 function setSelected(id){selectedId=id;renderLayers();syncProperties();renderTimeline();requestRender();}
 function renderLayers(){
+ const es=$('empty-state');if(es)es.hidden=project.layers.length>0;
  const host=$('layers');host.replaceChildren();$('layer-count').textContent=project.layers.length+' capas';
  for(let i=project.layers.length-1;i>=0;i--){const l=project.layers[i],row=document.createElement('div');row.className='layer'+(l.id===selectedId?' selected':'');row.dataset.id=l.id;
   const eye=document.createElement('button');eye.className='layer-visible';eye.textContent=l.visible?'◉':'○';eye.title=l.visible?'Ocultar':'Mostrar';eye.onclick=e=>{e.stopPropagation();pushUndo();l.visible=!l.visible;dirty();renderLayers();};
@@ -396,9 +397,9 @@ function addPreset(kind){
 }
 function playToggle(){if(playing){stopPlayback();return;}playing=true;lastTick=performance.now();$('btn-play').textContent='⏸ Pausar';const tick=now=>{if(!playing)return;const elapsed=now-lastTick;lastTick=now;frameTimer+=elapsed;const step=1000/project.fps;while(frameTimer>=step){currentFrame=(currentFrame+1)%project.duration;frameTimer-=step;}requestRender();renderPlayhead();requestAnimationFrame(tick);};requestAnimationFrame(tick);}
 function stopPlayback(){playing=false;frameTimer=0;$('btn-play').textContent='▶ Reproducir';syncProperties();renderTimeline();}
-function exportPNG(){const out=B.makeCanvas(project.width,project.height);renderScene(out.getContext('2d'),currentFrame);out.toBlob(blob=>{if(blob){B.download(blob,B.cleanName(project.name)+'_f'+currentFrame+'.png');toast('Imagen PNG exportada');}else toast('No se pudo generar el PNG',true);},'image/png');}
+function exportPNG(){if(!project.layers.length){toast('Importa alguna pieza antes de exportar',true);return;}const out=B.makeCanvas(project.width,project.height);renderScene(out.getContext('2d'),currentFrame);out.toBlob(blob=>{if(blob){B.download(blob,B.cleanName(project.name)+'_f'+currentFrame+'.png');toast('Imagen PNG exportada');}else toast('No se pudo generar el PNG',true);},'image/png');}
 async function exportWebM(){
- if(exportBusy)return;
+ if(exportBusy)return;if(!project.layers.length){toast('Importa alguna pieza antes de exportar',true);return;}
  if(typeof MediaRecorder==='undefined'||!('captureStream' in HTMLCanvasElement.prototype)){toast('Este navegador no permite grabar vídeo. Usa Chrome o Edge.',true);return;}
  const mime=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm'].find(m=>MediaRecorder.isTypeSupported(m));
  if(!mime){toast('Este navegador no es compatible con WebM',true);return;}
@@ -423,7 +424,7 @@ async function exportWebM(){
  }catch(e){toast('Error de exportación: '+e.message,true);if(recorder?.state==='recording')recorder.stop();}
  finally {stream?.getTracks().forEach(t=>t.stop());btn.disabled=false;btn.textContent=oldLabel;exportBusy=false;}
 }
-async function sendToPaint(){try{if(!await saveNow())throw Error('No se pudo guardar el proyecto de animación');const out=B.makeCanvas(project.width,project.height);renderScene(out.getContext('2d'),currentFrame,project.width,project.height,false);await B.send({type:'flat-image',name:project.name+'_fotograma',width:project.width,height:project.height,dataUrl:out.toDataURL('image/png')});navigationAllowed=true;window.location.href='../dibujo/index.html?transfer=1';}catch(e){toast('No se pudieron transferir las capas: '+e.message,true);}}
+async function sendToPaint(){try{if(!project.layers.length){toast('Aún no hay piezas que enviar',true);return;}if(!await saveNow())throw Error('No se pudo guardar el proyecto de animación');const out=B.makeCanvas(project.width,project.height);renderScene(out.getContext('2d'),currentFrame,project.width,project.height,false);await B.send({type:'flat-image',name:project.name+'_fotograma',width:project.width,height:project.height,dataUrl:out.toDataURL('image/png')});navigationAllowed=true;window.location.href='../dibujo/index.html?transfer=1';}catch(e){toast('No se pudieron transferir las capas: '+e.message,true);}}
 async function acceptTransferredArt(){if(!location.search.includes('transfer'))return;
  try{const transfer=await B.receive();if(!transfer)return;
   if(!['layered-art','flat-image'].includes(transfer.type))return;
@@ -463,10 +464,26 @@ function changeParent(id){const l=activeLayer();if(!l)return;if(id===l.id||isDes
  p.x=round(local[4]);p.y=round(local[5]);p.angle=round(Math.atan2(local[1],local[0])*180/Math.PI);p.scaleX=round(sx);p.scaleY=round((local[0]*local[3]-local[1]*local[2])/Math.max(.001,sx));
  setPose(l,p);refreshSidebar();dirty();
 }
+// Lo que quede del muñeco de ejemplo (sin animar) guardado de antes no se vuelve a abrir solo; tus propias piezas sí
+function looksUntouchedDemo(p){if(!p||!Array.isArray(p.layers)||!p.layers.length)return false;const d=new Map(createDemoProject().layers.map(l=>[l.name,l.width+'x'+l.height]));return p.layers.every(l=>l&&d.get(l.name)===l.width+'x'+l.height&&(!l.keys||!Object.keys(l.keys).length));}
+function deleteSelected(){
+ const l=activeLayer();if(!l){toast('Elige primero la capa que quieres eliminar');return;}
+ const i=project.layers.indexOf(l);pushUndo();
+ project.layers=project.layers.filter(o=>o.id!==l.id);
+ for(const item of project.layers){if(item.parent===l.id)item.parent=l.parent&&project.layers.some(o=>o.id===l.parent)?l.parent:null;}
+ cache.delete(l.id);selectedId=project.layers.length?project.layers[Math.max(0,i-1)].id:null;
+ refreshSidebar();dirty();
+ GMUI.aviso('Capa «'+l.name+'» eliminada','Deshacer',()=>undo());
+}
+async function showDemo(){
+ if(project.layers.length&&!await GMUI.confirmar('¿Sustituir lo que hay por el personaje de ejemplo? Descarga antes una copia si no quieres perderlo (también puedes Deshacer).','Ver el ejemplo'))return;
+ pushUndo();await loadProject(createDemoProject(),false);saveSoon();toast('Personaje de ejemplo cargado');
+}
+async function goPaint(){if(!await saveNow())return;navigationAllowed=true;location.href='../dibujo/index.html';}
 function setupUI(){
  $('project-name').onchange=e=>{const name=e.target.value.trim()||'Mi personaje';if(project.name!==name){pushUndo();project.name=name;saveSoon();}};
  document.querySelector('a.home').addEventListener('click', async e=>{if(window.parent!==window){e.preventDefault();if(!await saveNow())return;navigationAllowed=true;window.parent.postMessage({gmstudio:1,action:'home'},'*');}});
- $('btn-demo').onclick=async()=>{if(project.layers.length&&!confirm('¿Sustituir tu proyecto por el personaje de ejemplo? Descarga tu proyecto antes de continuar.'))return;await loadProject(createDemoProject());saveSoon();toast('Personaje de ejemplo creado');};
+ $('btn-demo').onclick=showDemo;$('es-demo').onclick=showDemo;$('es-import').onclick=()=>$('file-layers').click();$('es-load').onclick=()=>$('file-project').click();$('es-paint').onclick=goPaint;
  $('btn-import').onclick=()=>$('file-layers').click();$('file-layers').onchange=e=>{importLayers(Array.from(e.target.files));e.target.value='';};
  $('btn-save').onclick=downloadJSON;$('btn-verify').onclick=verifySave;$('btn-load').onclick=()=>$('file-project').click();
  $('file-project').onchange=e=>{if(e.target.files[0])importProjectFile(e.target.files[0]);e.target.value='';};
@@ -477,7 +494,7 @@ function setupUI(){
  $('layer-up').onclick=()=>{const l=activeLayer();if(!l)return;const i=project.layers.indexOf(l);if(i>=project.layers.length-1)return;pushUndo();project.layers.splice(i,1);project.layers.splice(i+1,0,l);refreshSidebar();dirty();};
  $('layer-down').onclick=()=>{const l=activeLayer();if(!l)return;const i=project.layers.indexOf(l);if(i<=0)return;pushUndo();project.layers.splice(i,1);project.layers.splice(i-1,0,l);refreshSidebar();dirty();};
  $('layer-duplicate').onclick=async()=>{const l=activeLayer();if(!l)return;pushUndo();const i=project.layers.indexOf(l),copy=clone(l);copy.id=uid();copy.name+=' (copia)';copy.base.x+=20;copy.base.y+=20;project.layers.splice(i+1,0,copy);selectedId=copy.id;await loadImage(copy);refreshSidebar();dirty();};
- $('layer-delete').onclick=()=>{const l=activeLayer();if(!l)return;if(!confirm('¿Eliminar «'+l.name+'»? Las capas hijas quedarán independientes.'))return;pushUndo();project.layers=project.layers.filter(o=>o.id!==l.id);for(const item of project.layers){if(item.parent===l.id)item.parent=null;}cache.delete(l.id);selectedId=null;refreshSidebar();dirty();};
+ $('layer-delete').onclick=deleteSelected;
  $('layer-name').onchange=e=>{const l=activeLayer();if(!l)return;pushUndo();l.name=e.target.value.trim()||'Capa';refreshSidebar();dirty();};
  $('layer-kind').onchange=e=>{const l=activeLayer();if(!l)return;pushUndo();l.kind=e.target.value;dirty();renderLayers();};
  $('layer-parent').onchange=e=>changeParent(e.target.value);
@@ -507,17 +524,17 @@ function setupUI(){
  viewport.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='copy';});
  viewport.addEventListener('drop',e=>{e.preventDefault();importLayers(Array.from(e.dataTransfer.files).filter(file=>file.type.startsWith('image/')));});
  document.addEventListener('keydown',e=>{if(['INPUT','SELECT','TEXTAREA'].includes(document.activeElement.tagName))return;
-  if(e.code==='Space'){if(document.activeElement.tagName==='BUTTON')return;e.preventDefault();playToggle();}else if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();}else if((e.ctrlKey||e.metaKey)&&e.key==='y'){e.preventDefault();redo();}else if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();downloadJSON();}else if(e.key===','){stopPlayback();setFrame(currentFrame-1);}else if(e.key==='.'){stopPlayback();setFrame(currentFrame+1);}
+  if(e.code==='Space'){if(document.activeElement.tagName==='BUTTON')return;e.preventDefault();playToggle();}else if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();}else if((e.ctrlKey||e.metaKey)&&e.key==='y'){e.preventDefault();redo();}else if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();downloadJSON();}else if(e.key==='Delete'||e.key==='Backspace'){e.preventDefault();deleteSelected();}else if(e.key===','){stopPlayback();setFrame(currentFrame-1);}else if(e.key==='.'){stopPlayback();setFrame(currentFrame+1);}
  });
  window.addEventListener('resize',()=>{if(project)fitZoom();});
  document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)stopPlayback();});
  window.addEventListener('beforeunload',e=>{if(!navigationAllowed&&changeRevision>savedRevision){e.preventDefault();e.returnValue='';}});
 }
 async function start(){setupUI();try{
- const previous=await B.read('animation-project');if(previous?.layers){await loadProject(previous);status('Proyecto recuperado ✓');}
- else{await loadProject(createDemoProject());status('Ejemplo listo');saveSoon();}
+ const previous=await B.read('animation-project');if(previous?.layers&&!looksUntouchedDemo(previous)){await loadProject(previous);status(previous.layers.length?'Proyecto recuperado ✓':'Proyecto vacío · importa tus PNG');}
+ else{await loadProject(newProject());status('Proyecto nuevo · importa tus PNG');}
  await acceptTransferredArt();
- }catch(e){console.error(e);toast('Error al abrir proyecto: '+e.message,true);await loadProject(createDemoProject());status('Ejemplo de emergencia',true);}
+ }catch(e){console.error(e);toast('Error al abrir proyecto: '+e.message,true);await loadProject(newProject());status('No se pudo recuperar · carga tu copia .gmotion.json',true);}
 }
 // Interface for integration smoke tests; users can also inspect it in the browser's console.
 window.GachaMotionApp={undoDepth:()=>undoStack.length,getProject:()=>clone(project),getFrame:()=>currentFrame,setFrame,select:setSelected,createDemo:createDemoProject,loadProject,saveProject:downloadJSON,poseAt,renderScene,exportPNG};

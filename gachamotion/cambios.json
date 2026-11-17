@@ -1,5 +1,14 @@
 [
   {
+    "version": "0.4",
+    "fecha": "2026-11-17",
+    "notas": [
+      "Ya no sale el muñeco de prueba: entras y cargas el tuyo (Importar PNG o Abrir proyecto). El ejemplo sigue disponible con un botón",
+      "Eliminar capas funciona siempre (ya no depende del cuadro del navegador) y se puede Deshacer; también con la tecla Supr",
+      "Probadas todas las funciones del animador y del dibujo"
+    ]
+  },
+  {
     "version": "0.3",
     "fecha": "2026-11-17",
     "notas": [

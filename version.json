@@ -1,7 +1,7 @@
 {
-  "version": "1.2",
+  "version": "1.3",
   "fecha": "2026-11-17",
   "notas": [
-    "Fondo animado: la imagen se mueve despacio, los destellos brillan y el arcoíris reluce (se apaga en Estilo → «Con movimiento»)"
+    "GachaMotion 0.4: arranca vacío para cargar tu personaje y eliminar capas funciona siempre"
   ]
 }

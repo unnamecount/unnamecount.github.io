@@ -1,9 +1,9 @@
 {
-  "version": "0.3",
+  "version": "0.4",
   "fecha": "2026-11-17",
   "notas": [
-    "GachaMotion Studio ahora vive dentro del Estudio Creativo y se actualiza solo",
-    "Dibujo: el pincel ya pinta del tamaño elegido con el ratón, la opacidad no deja bolitas y el relleno tapa los bordes suaves",
-    "Animación: deshacer más rápido, giro sin saltos y arrastrar por la línea de tiempo"
+    "Ya no sale el muñeco de prueba: entras y cargas el tuyo (Importar PNG o Abrir proyecto). El ejemplo sigue disponible con un botón",
+    "Eliminar capas funciona siempre (ya no depende del cuadro del navegador) y se puede Deshacer; también con la tecla Supr",
+    "Probadas todas las funciones del animador y del dibujo"
   ]
 }

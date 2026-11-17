@@ -1,5 +1,5 @@
 /* GachaMotion Studio — service worker. Lo genera build.py: no lo edites a mano. */
-const VERSION = "0.3";
+const VERSION = "0.4";
 const PREFIX = "gachamotion-app-";
 const CACHE = PREFIX + VERSION;
 const SHELL = [
@@ -15,10 +15,11 @@ const SHELL = [
  "./index.html",
  "./shared/actualizar.js",
  "./shared/base.css",
- "./shared/bridge.js"
+ "./shared/bridge.js",
+ "./shared/ui.js"
 ];
 const SOLO_MIOS = false;
-// build: 16b4a8bd6484
+// build: b4ab3391a9f8
 
 self.addEventListener('install', e => {
   e.waitUntil((async () => {
