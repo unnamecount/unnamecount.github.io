@@ -1,5 +1,5 @@
 /* Estudio Creativo — service worker. Lo genera build.py: no lo edites a mano. */
-const VERSION = "1.0";
+const VERSION = "1.1";
 const PREFIX = "estudio-app-";
 const CACHE = PREFIX + VERSION;
 const SHELL = [
@@ -14,10 +14,11 @@ const SHELL = [
  "./icon-192.png",
  "./icon-512.png",
  "./icon-maskable-512.png",
- "./apple-touch-icon.png"
+ "./apple-touch-icon.png",
+ "./imagenes/fondo-web.jpg"
 ];
 const SOLO_MIOS = true;
-// build: 898e5ad8f380
+// build: d6d9535bea51
 
 self.addEventListener('install', e => {
   e.waitUntil((async () => {

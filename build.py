@@ -105,7 +105,7 @@ def escribir_sw(carpeta, titulo, prefix, version, shell, solo_mios):
 def imagenes():
     """imagenes/fondo.* y imagenes/logo.* → versiones ligeras + imagenes.json"""
     out = {'fondo': None, 'logo': None}
-    for ext in ('jpg', 'jpeg', 'png', 'webp'):
+    for ext in ("jpg", "jpeg", "png", "webp"):
         p = IM / f'fondo.{ext}'
         if p.exists() and not out['fondo']:
             im = Image.open(p).convert('RGB')
