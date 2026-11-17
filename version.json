@@ -1,7 +1,7 @@
 {
-  "version": "1.1",
+  "version": "1.2",
   "fecha": "2026-11-17",
   "notas": [
-    "Nuevo fondo rosa con pinceles, paleta y arcoíris"
+    "Fondo animado: la imagen se mueve despacio, los destellos brillan y el arcoíris reluce (se apaga en Estilo → «Con movimiento»)"
   ]
 }

@@ -272,9 +272,25 @@ async function imagenes(){
   } catch (e) {}
 }
 
+/* ---------- Destellos del fondo ---------- */
+function destellos(){
+  const fx = $('#fx'); if (!fx) return;
+  const n = innerWidth < 600 ? 16 : 30, colores = ['#fff', '#fff', '#fff', '#fff4b8', '#ffd9ee', '#d9f3ff'];
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('span'), tam = 6 + Math.random() * 16;
+    s.className = 'sp' + (Math.random() < .3 ? ' c' : '');
+    if (s.className.includes('c')) { s.style.width = s.style.height = (3 + Math.random() * 5) + 'px'; }
+    else { s.style.width = s.style.height = tam + 'px'; }
+    s.style.background = colores[i % colores.length];
+    s.style.left = (Math.random() * 100) + '%'; s.style.top = (8 + Math.random() * 86) + '%';
+    s.style.setProperty('--d', (5 + Math.random() * 6).toFixed(1) + 's'); s.style.setProperty('--t', (-Math.random() * 10).toFixed(1) + 's');
+    fx.appendChild(s);
+  }
+}
+
 /* ---------- Arranque ---------- */
 async function arrancar(){
-  aplicarTema(); montarPanel(); imagenes();
+  aplicarTema(); montarPanel(); imagenes(); destellos();
   $('#bCheck').onclick = () => revisarTodas(true);
   const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   $('#foot').textContent = `Estudio Creativo ${VER} · Cada programa se guarda en este aparato` + (esStandalone() ? '' : esIOS ? ' · Para instalarlo: Compartir → «Añadir a pantalla de inicio»' : '');

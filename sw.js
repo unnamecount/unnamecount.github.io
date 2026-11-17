@@ -1,5 +1,5 @@
 /* Estudio Creativo — service worker. Lo genera build.py: no lo edites a mano. */
-const VERSION = "1.1";
+const VERSION = "1.2";
 const PREFIX = "estudio-app-";
 const CACHE = PREFIX + VERSION;
 const SHELL = [
@@ -18,7 +18,7 @@ const SHELL = [
  "./imagenes/fondo-web.jpg"
 ];
 const SOLO_MIOS = true;
-// build: d6d9535bea51
+// build: 87c19e6e6d6c
 
 self.addEventListener('install', e => {
   e.waitUntil((async () => {

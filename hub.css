@@ -140,3 +140,24 @@ html[data-mov="0"] .edge::before { animation: none !important; }
   .panel { right: 8px; left: 8px; width: auto; top: 70px; }
 }
 @media (prefers-reduced-motion: reduce) { .card { animation: none; } }
+
+/* Fondo animado: la imagen se mueve despacio, los rayos laten, el arcoíris brilla y hay destellos que suben */
+.bg { animation: deriva 45s ease-in-out infinite alternate; will-change: transform; }
+@keyframes deriva { from { transform: scale(1.04) translate3d(-1.2%, -.8%, 0); } to { transform: scale(1.11) translate3d(1.2%, .9%, 0); } }
+.veil::after { content: ""; position: absolute; left: 50%; top: -12%; width: 70vmax; height: 55vmax; transform: translateX(-50%);
+  background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.75), rgba(255,255,255,0) 62%); mix-blend-mode: soft-light; animation: rayos 7s ease-in-out infinite; }
+@keyframes rayos { 0%, 100% { opacity: .35; transform: translateX(-50%) scale(.94); } 50% { opacity: 1; transform: translateX(-50%) scale(1.06); } }
+.fx { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.fx::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 46%;
+  background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.55) 50%, transparent 62%) 160% 0 / 55% 100% no-repeat;
+  mix-blend-mode: soft-light; animation: brillo 9s ease-in-out infinite; }
+@keyframes brillo { from { background-position: 160% 0; } to { background-position: -90% 0; } }
+.fx .sp { position: absolute; background: #fff; opacity: 0;
+  clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  filter: drop-shadow(0 0 4px rgba(255,255,255,.95)); animation: destello var(--d, 6s) ease-in-out var(--t, 0s) infinite; }
+.fx .sp.c { clip-path: circle(50%); }
+@keyframes destello { 0% { opacity: 0; transform: translateY(14px) scale(.3) rotate(0deg); } 30% { opacity: .95; transform: translateY(-6px) scale(1) rotate(40deg); }
+  60% { opacity: .5; transform: translateY(-22px) scale(.7) rotate(90deg); } 100% { opacity: 0; transform: translateY(-44px) scale(.2) rotate(140deg); } }
+html[data-mov="0"] .bg, html[data-mov="0"] .veil::after, html[data-mov="0"] .fx::after { animation: none; }
+html[data-mov="0"] .fx { display: none; }
+@media (prefers-reduced-motion: reduce) { .bg, .veil::after, .fx::after { animation: none; } .fx { display: none; } }

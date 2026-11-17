@@ -1,5 +1,12 @@
 [
   {
+    "version": "1.2",
+    "fecha": "2026-11-17",
+    "notas": [
+      "Fondo animado: la imagen se mueve despacio, los destellos brillan y el arcoíris reluce (se apaga en Estilo → «Con movimiento»)"
+    ]
+  },
+  {
     "version": "1.1",
     "fecha": "2026-11-17",
     "notas": [
